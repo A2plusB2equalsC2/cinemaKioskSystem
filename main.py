@@ -3,14 +3,13 @@ import IO as io
 import time
 import threading
 
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("dark-blue")
+ctk.set_appearance_mode("light")
 
 class Window(ctk.CTk):
   def __init__(self):
     super().__init__()
 
-    self.title("cinema kiosk system")
+    self.title("Cinema Kiosk System")
     self.columnconfigure(0,weight=1)
     self.rowconfigure(0,weight=1)
     self.toplevel_window = None
@@ -35,17 +34,17 @@ class LoginFrame(ctk.CTkFrame):
     self.columnconfigure(0,weight=1)
     self.columnconfigure(1,weight=1)
 
-    lbl_welcome = ctk.CTkLabel(self, text="Welcome. Please Login.")
+    lbl_welcome = ctk.CTkLabel(self, text="Welcome. Please login.")
     lbl_welcome.grid(column=0, row=0, columnspan=2,pady=10)
-    lbl_username = ctk.CTkLabel(self, text="username:")
+    lbl_username = ctk.CTkLabel(self, text="Username:")
     lbl_username.grid(column=0,row=1,sticky="E")
-    lbl_password = ctk.CTkLabel(self, text="password:")
+    lbl_password = ctk.CTkLabel(self, text="Password:")
     lbl_password.grid(column=0,row=2,sticky="E")
-    ent_username = ctk.CTkEntry(self,placeholder_text="username", placeholder_text_color="gray")
+    ent_username = ctk.CTkEntry(self,placeholder_text="Username", placeholder_text_color="gray")
     ent_username.grid(column=1,row=1,padx=12,pady=10,sticky="W")
-    ent_password = ctk.CTkEntry(self,placeholder_text="password", placeholder_text_color="gray",show="*")
+    ent_password = ctk.CTkEntry(self,placeholder_text="Password", placeholder_text_color="gray",show="*")
     ent_password.grid(column=1,row=2,padx=12,pady=10,sticky="W")
-    btn_login = ctk.CTkButton(self, text="login", cursor="hand2", command=lambda:self.verfAdmin(master,ent_username.get(), ent_password.get()))
+    btn_login = ctk.CTkButton(self, text="Login", cursor="hand2", command=lambda:self.verfAdmin(master,ent_username.get(), ent_password.get()))
     btn_login.grid(column=0, row=3, columnspan=2,pady=10)
     self.lbl_message = ctk.CTkLabel(self, text="")
     self.lbl_message.grid(column=0, row=4, columnspan=2,pady=10)
@@ -75,14 +74,15 @@ class UserFrame(ctk.CTkFrame):
     filmNames = []
     for i in list:
       filmNames.append([i[1],i[0]])
-      print([i[1],i[0]])
+    fnames = self.returnDistinct([i[0] for i in filmNames])
+    
 
     lbl_user = ctk.CTkLabel(self, text="Please select the film.")
     lbl_user.pack(side="top")
     lbox_f = ctk.CTkOptionMenu(self,
-                                 values=[i[0] for i in filmNames])
+                                 values=fnames)
     lbox_f.pack(side="top",pady=5)
-    btn_changeToAdmin = ctk.CTkButton(self, text="I am admin", width=20, height=5, fg_color="#282424", hover_color="#282424", cursor="hand2", command=lambda:self.changeToAdmin(master))
+    btn_changeToAdmin = ctk.CTkButton(self, text="I am admin",text_color="black", width=20, height=5, fg_color="#dbdbdb", hover_color="#dbdbdb", cursor="hand2", command=lambda:self.changeToAdmin(master))
     btn_changeToAdmin.pack(side="bottom",pady=5)
     btn_user = ctk.CTkButton(self,text="Confirm",command=lambda: self.submit(master,lbox_f.get()))
     btn_user.pack(side="bottom",pady=10)
@@ -93,6 +93,15 @@ class UserFrame(ctk.CTkFrame):
   def changeToAdmin(self,master):
     master.toplevel_window = TopLoginPage(master)
     master.toplevel_window.focus()
+
+  def returnDistinct(self, li):
+    last = li[0]
+    arr = [li[0]]
+    for i in range(1,len(li)):
+      if li[i] != last:
+        arr.append(li[i])
+        last = li[i]
+    return arr
 
 class filmFrame(ctk.CTkFrame):
   def __init__(self,master,name):
@@ -106,7 +115,7 @@ class filmFrame(ctk.CTkFrame):
       if i[1] == name:
         houses.append([i[0],i[2],i[3]])
 
-    lbl_m = ctk.CTkLabel(self, text="Please select the house.")
+    lbl_m = ctk.CTkLabel(self, text="Please select the timeslot.")
     lbl_m.grid(row=0,column=0,columnspan=4,pady=20)
     lbl_house = ctk.CTkLabel(self, text="House")
     lbl_house.grid(row=1,column=0,pady=20)
@@ -132,7 +141,7 @@ class filmFrame(ctk.CTkFrame):
       if io.checkseats(name,houses[i][0]) == 0:
         btn_confirms[-1].configure(state="disabled")
         btn_confirms[-1].configure(text="Sold")
-    btn_changeToAdmin = ctk.CTkButton(self, text="I am admin", width=20, height=5, fg_color="#282424", hover_color="#282424", cursor="hand2", command=lambda:self.changeToAdmin(master))
+    btn_changeToAdmin = ctk.CTkButton(self, text="I am admin",text_color="black", width=20, height=5, fg_color="#dbdbdb", hover_color="#dbdbdb", cursor="hand2", command=lambda:self.changeToAdmin(master))
     btn_changeToAdmin.grid(row=99,column=1,columnspan=2,sticky="s")
     btn_Back = ctk.CTkButton(self, text="Back", command=lambda:self.back(master))
     btn_Back.grid(row=99,column=0)
@@ -149,7 +158,7 @@ class filmFrame(ctk.CTkFrame):
 
 class SeatFrame(ctk.CTkFrame):
   def __init__(self,master,name,house):
-    super().__init__(master, fg_color="#282424")
+    super().__init__(master, fg_color="#dbdbdb")
     self.seat = io.fetchseats(name,house)
     self.width = len(self.seat[0])+1
     self.height = len(self.seat)+2
@@ -161,7 +170,7 @@ class SeatFrame(ctk.CTkFrame):
 
     self.selected = {}
     
-    self.seatFrame = ctk.CTkFrame(self,fg_color="#282424")
+    self.seatFrame = ctk.CTkFrame(self,fg_color="#dbdbdb")
     filmName_lbl = ctk.CTkLabel(self.seatFrame,text="screen",font=("Arial",14))
     filmName_lbl.grid(row=0,column=0,columnspan=self.width,pady=1)
     self.seat_lbl = []
@@ -180,36 +189,36 @@ class SeatFrame(ctk.CTkFrame):
       self.seat_lbl[-1].grid(row=i+2,column=self.width-1,ipadx=3,pady=1)
       self.seatFrame.grid(row=0,column=1)
 
-    self.entry_frame = ctk.CTkFrame(self,fg_color="#282424")
+    self.entry_frame = ctk.CTkFrame(self,fg_color="#dbdbdb")
     message_lbl = ctk.CTkLabel(self.entry_frame,text="Please select seat")
     message_lbl.grid(row=0,column=0,columnspan=2,pady=1)
-    row_lbl = ctk.CTkLabel(self.entry_frame,text="row:",justify="right")
+    row_lbl = ctk.CTkLabel(self.entry_frame,text="Row:",justify="right")
     row_lbl.grid(row=1,column=0,padx=2,pady=2)
     row_lbox = ctk.CTkOptionMenu(self.entry_frame,values=[chr(i+65) for i in range(self.height-2)])
     row_lbox.grid(row=1,column=1,padx=2,pady=2)
-    column_lbl = ctk.CTkLabel(self.entry_frame,text="column:",justify="right")
+    column_lbl = ctk.CTkLabel(self.entry_frame,text="Column:",justify="right")
     column_lbl.grid(row=2,column=0,padx=2,pady=2)
     column_lbox = ctk.CTkOptionMenu(self.entry_frame,values=[str(i) for i in range(1,self.width)])
     column_lbox.grid(row=2,column=1,padx=2,pady=2)
-    sub_btn = ctk.CTkButton(self.entry_frame, text="select", command=lambda:self.seatSelect(row_lbox.get(),column_lbox.get()))
+    sub_btn = ctk.CTkButton(self.entry_frame, text="Select", command=lambda:self.seatSelect(row_lbox.get(),column_lbox.get()))
     sub_btn.bind("<Leave>", self.clear_message)
     sub_btn.grid(row=3,column=0,columnspan=2,pady=10)
-    self.warn_lbl = ctk.CTkLabel(self.entry_frame,text="This seat is already taken.\nPlease choose another one.",text_color="#282424")
+    self.warn_lbl = ctk.CTkLabel(self.entry_frame,text="This seat is already taken.\nPlease choose another one.",text_color="#dbdbdb")
     self.warn_lbl.grid(row=4,column=0,columnspan=2)
-    btn_changeToAdmin = ctk.CTkButton(self.entry_frame, text="I am admin", width=20, height=5, fg_color="#282424", hover_color="#282424", cursor="hand2", command=lambda: self.changeToAdmin(master))
+    btn_changeToAdmin = ctk.CTkButton(self.entry_frame, text="I am admin",text_color="black", width=20, height=5, fg_color="#dbdbdb", hover_color="#dbdbdb", cursor="hand2", command=lambda: self.changeToAdmin(master))
     btn_changeToAdmin.grid(row=5,column=0,columnspan=2)
     self.entry_frame.grid(row=1,column=1,sticky="ns")
 
-    self.selectionFrame = ctk.CTkFrame(self,fg_color="#282424")
+    self.selectionFrame = ctk.CTkFrame(self,fg_color="#dbdbdb")
     lbl_selected = ctk.CTkLabel(self.selectionFrame, text="Selected:")
     lbl_selected.pack(side="top",pady=20)
     self.lbl_selectedSeat = []
-    self.btn_unselect = ctk.CTkButton(self.selectionFrame, text="unselect", state="disabled", command=lambda: self.unselectLast(self.lbl_selectedSeat[-1].cget("text")))
+    self.btn_unselect = ctk.CTkButton(self.selectionFrame, text="Unselect", state="disabled", command=lambda: self.unselectLast(self.lbl_selectedSeat[-1].cget("text")))
     self.btn_unselect.pack(side="bottom", pady=20)
     self.selectionFrame.grid(row=0,column=0,rowspan=2,sticky="nsew")
 
-    self.continueFrame = ctk.CTkFrame(self,fg_color="#282424")
-    btn_exit = ctk.CTkButton(self.continueFrame, fg_color="#282424", hover_color="#282424",text="Back", command=lambda: self.exit(master))
+    self.continueFrame = ctk.CTkFrame(self,fg_color="#dbdbdb")
+    btn_exit = ctk.CTkButton(self.continueFrame, fg_color="#dbdbdb", hover_color="#dbdbdb",text="Back", text_color="black", command=lambda: self.exit(master))
     btn_exit.pack(side="top",pady=20)
     list = io.fetchfilms()
     price = 0
@@ -218,7 +227,7 @@ class SeatFrame(ctk.CTkFrame):
         price = i[5]
     lbl_price = ctk.CTkLabel(self.continueFrame,text=f"Price:${price}")
     lbl_price.pack(side="top",pady=200)
-    self.btn_continue = ctk.CTkButton(self.continueFrame, text="confirm", command=lambda:self.GoToPay(master,self.selected.keys(),price,name,house), state="disabled")
+    self.btn_continue = ctk.CTkButton(self.continueFrame, text="Confirm", command=lambda:self.GoToPay(master,self.selected.keys(),price,name,house), state="disabled")
     self.btn_continue.pack(side="bottom",pady=20)
     self.continueFrame.grid(row=0,column=2,rowspan=2,sticky="nsew")
 
@@ -235,7 +244,7 @@ class SeatFrame(ctk.CTkFrame):
       self.selected[tstr] = index
       tempLBL = ctk.CTkLabel(self.selectionFrame, text=tstr, fg_color="blue",corner_radius=10)
       if len(self.lbl_selectedSeat) != 0:
-        self.lbl_selectedSeat[-1].configure(fg_color="#282424")
+        self.lbl_selectedSeat[-1].configure(fg_color="#dbdbdb")
       self.lbl_selectedSeat.append(tempLBL)
       self.btn_unselect.configure(state="normal")
       self.lbl_selectedSeat[-1].pack(side="top",ipadx=5,ipady=2)
@@ -256,7 +265,7 @@ class SeatFrame(ctk.CTkFrame):
 
   def clear_message(self,event):
     if self.warn_lbl.cget("text_color") == "red":
-      self.warn_lbl.configure(text_color="#282424")
+      self.warn_lbl.configure(text_color="#dbdbdb")
 
   def changeToAdmin(self,master):
     master.toplevel_window = TopLoginPage(master)
@@ -272,9 +281,9 @@ class PayFrame(ctk.CTkFrame):
     for i in seats:
       str += f"{i},"
     str = str[:-1]
-    lbl_message = ctk.CTkLabel(self,text="Your Selected Seats:")
+    lbl_message = ctk.CTkLabel(self,text="Your selected seats:")
     lbl_message.pack(side="top", pady=30)
-    lbl_selected = ctk.CTkLabel(self,text=str)
+    lbl_selected = ctk.CTkLabel(self,text=f"{name}, house {house}\n{str}")
     lbl_selected.pack(side="top", pady=5)
     total = float(price)*len(seats)
     lbl_total = ctk.CTkLabel(self,text=f"Total: ${total}")
@@ -285,9 +294,9 @@ class PayFrame(ctk.CTkFrame):
       if i[1] == name and i[0] == house:
         taken = i[4]
     selected = taken+str+","
-    self.btn_pay = ctk.CTkButton(self, text="pay", command=lambda: self.payment(master,name,house,selected))
+    self.btn_pay = ctk.CTkButton(self, text="Pay", command=lambda: self.payment(master,name,house,selected))
     self.btn_pay.pack(side="bottom", pady=20)
-    self.pbar_pay = ctk.CTkProgressBar(self, border_color="white", fg_color="#282424",progress_color="white")
+    self.pbar_pay = ctk.CTkProgressBar(self, border_color="white", fg_color="#dbdbdb",progress_color="white")
     self.pbar_pay.set(0)
     self.lbl_paying = ctk.CTkLabel(self, text="Processing transaction...")
 
@@ -312,8 +321,8 @@ class TopFinishPay(ctk.CTkToplevel):
     self.geometry("400x300")
     
     frame = ctk.CTkFrame(self)
-    lbl_m1 = ctk.CTkLabel(frame, text="Your payment is received.")
-    lbl_m2 = ctk.CTkLabel(frame, text="Thank you for your purchase.")
+    lbl_m1 = ctk.CTkLabel(frame, text="Your payment is received.", fg_color="#dbdbdb")
+    lbl_m2 = ctk.CTkLabel(frame, text="Thank you for your purchase.", fg_color="#dbdbdb")
     lbl_m1.pack(side="top", pady=5)
     lbl_m2.pack(side="top", pady=5)
     frame.pack(side="top", pady=20)
@@ -332,17 +341,17 @@ class TopLoginPage(ctk.CTkToplevel):
     self.columnconfigure(0,weight=1)
     self.columnconfigure(1,weight=1)
 
-    lbl_welcome = ctk.CTkLabel(self, text="Welcome. Please Login.")
+    lbl_welcome = ctk.CTkLabel(self, text="Welcome. Please login.")
     lbl_welcome.grid(column=0, row=0, columnspan=2,pady=10)
-    lbl_username = ctk.CTkLabel(self, text="username:")
+    lbl_username = ctk.CTkLabel(self, text="Username:")
     lbl_username.grid(column=0,row=1,sticky="E")
-    lbl_password = ctk.CTkLabel(self, text="password:")
+    lbl_password = ctk.CTkLabel(self, text="Password:")
     lbl_password.grid(column=0,row=2,sticky="E")
-    ent_username = ctk.CTkEntry(self,placeholder_text="username", placeholder_text_color="gray")
+    ent_username = ctk.CTkEntry(self,placeholder_text="Username", placeholder_text_color="gray")
     ent_username.grid(column=1,row=1,padx=12,pady=10,sticky="W")
-    ent_password = ctk.CTkEntry(self,placeholder_text="password", placeholder_text_color="gray",show="*")
+    ent_password = ctk.CTkEntry(self,placeholder_text="Password", placeholder_text_color="gray",show="*")
     ent_password.grid(column=1,row=2,padx=12,pady=10,sticky="W")
-    btn_login = ctk.CTkButton(self, text="login", cursor="hand2", command=lambda:self.verfAdmin(master,ent_username.get(), ent_password.get()))
+    btn_login = ctk.CTkButton(self, text="Login", cursor="hand2", command=lambda:self.verfAdmin(master,ent_username.get(), ent_password.get()))
     btn_login.grid(column=0, row=3, columnspan=2,pady=10)
     self.lbl_message = ctk.CTkLabel(self, text="")
     self.lbl_message.grid(column=0, row=4, columnspan=2,pady=10)
@@ -368,10 +377,10 @@ class AdminFrame(ctk.CTkFrame):
     lbox_admin.pack(side="top", pady=5)
     self.curShow = "f"
     self.frame = FilmList(self)
-    self.btn_admin = ctk.CTkButton(self,text="Show Houses",command=lambda:self.switchDisplay())
+    self.btn_admin = ctk.CTkButton(self,text="Show houses",command=lambda:self.switchDisplay())
     self.btn_admin.pack(side="top", pady=5)
     self.frame.pack(side="top", pady=5)
-    btn_signOut = ctk.CTkButton(self,text="sign out",width=20, height=5, fg_color="#282424", hover_color="#282424", cursor="hand2", command=lambda: self.signOut(master))
+    btn_signOut = ctk.CTkButton(self,text="Sign out", text_color="black", width=20, height=5, fg_color="#dbdbdb", hover_color="#dbdbdb", cursor="hand2", command=lambda: self.signOut(master))
     btn_signOut.pack(side="bottom", pady = 2)
     btn_sub = ctk.CTkButton(self,text="Confirm",command=lambda: self.adminSubmit(master,lbox_admin.get()))
     btn_sub.pack(side="bottom",pady=10)
@@ -379,13 +388,13 @@ class AdminFrame(ctk.CTkFrame):
   def switchDisplay(self):
     if self.curShow == "h":
       self.curShow = "f"
-      self.btn_admin.configure(text="Show Houses")
+      self.btn_admin.configure(text="Show houses")
       self.frame.pack_forget()
       self.frame = FilmList(self)
       self.frame.pack(side="top", pady=5)
     elif self.curShow == "f":
       self.curShow = "h"
-      self.btn_admin.configure(text="Show Films")
+      self.btn_admin.configure(text="Show films")
       self.frame.pack_forget()
       self.frame = HouseList(self)
       self.frame.pack(side="top", pady=5)
@@ -417,7 +426,7 @@ class FilmList(ctk.CTkFrame):
     lbl_date = ctk.CTkLabel(self,text="Date",font=("Helvetica", 18, "bold"))
     lbl_time = ctk.CTkLabel(self,text="Time",font=("Helvetica", 18, "bold"))
     lbl_price = ctk.CTkLabel(self,text="Price",font=("Helvetica", 18, "bold"))
-    lbl_seat = ctk.CTkLabel(self,text="No. of Available Seat",font=("Helvetica", 18, "bold"))
+    lbl_seat = ctk.CTkLabel(self,text="No. of available seats",font=("Helvetica", 18, "bold"))
     lbl_name.grid(row=0,column=0,padx=10,pady=10)
     lbl_house.grid(row=0,column=1,padx=10,pady=10)
     lbl_date.grid(row=0,column=2,padx=10,pady=10)
@@ -454,7 +463,7 @@ class HouseList(ctk.CTkFrame):
 
     self.houseslist = io.fetchhouses()
 
-    lbl_no = ctk.CTkLabel(self,text="House No.",font=("Helvetica", 18, "bold"))
+    lbl_no = ctk.CTkLabel(self,text="House no.",font=("Helvetica", 18, "bold"))
     lbl_row = ctk.CTkLabel(self,text="Row",font=("Helvetica", 18, "bold"))
     lbl_col = ctk.CTkLabel(self,text="Column",font=("Helvetica", 18, "bold"))
     lbl_no.grid(row=0,column=0,padx=10,pady=10)
@@ -483,7 +492,7 @@ class CreateFilm(ctk.CTkFrame):
     for i in io.fetchhouses():
       self.houses.append(str(i[0]))
 
-    self.lbl_message = ctk.CTkLabel(self,text="Create Film", font=("Arial", 24))
+    self.lbl_message = ctk.CTkLabel(self,text="Create film", font=("Arial", 24))
     self.lbl_message.grid(row=0,column=0,columnspan=2,pady=20)
     self.lbl_name = ctk.CTkLabel(self,text="Name:")
     self.lbl_name.grid(row=1,column=0,pady=5)
@@ -505,9 +514,9 @@ class CreateFilm(ctk.CTkFrame):
     self.ent_time.grid(row=4,column=1,pady=5)
     self.lbox_house = ctk.CTkOptionMenu(self, values=self.houses)
     self.lbox_house.grid(row=5,column=1,pady=5)
-    self.btn_submit = ctk.CTkButton(self,text="confirm",command=lambda:self.create(master,[self.ent_name.get(),float(self.ent_price.get()),self.lbox_house.get(),self.ent_date.get(),self.ent_time.get()]))
+    self.btn_submit = ctk.CTkButton(self,text="Confirm",command=lambda:self.create(master,[self.ent_name.get(),float(self.ent_price.get()),self.lbox_house.get(),self.ent_date.get(),self.ent_time.get()]))
     self.btn_submit.grid(row=9,column=0,columnspan=2,pady=5)
-    self.btn_signOut = ctk.CTkButton(self, text="sign out", width=20, height=5, fg_color="#282424", hover_color="#282424", cursor="hand2", command=lambda: self.signOut(master))
+    self.btn_signOut = ctk.CTkButton(self, text="Sign out",text_color="black", width=20, height=5, fg_color="#dbdbdb", hover_color="#dbdbdb", cursor="hand2", command=lambda: self.signOut(master))
     self.btn_signOut.grid(row=10,column=0,columnspan=2,pady=5)
 
   def create(self,master,info):
@@ -523,7 +532,7 @@ class CreateFilm(ctk.CTkFrame):
     self.frame = ctk.CTkFrame(self,fg_color=self.cget("fg_color"))
     lbl_info = ctk.CTkLabel(self.frame, text=f"name: {info[0]}\nprice: ${info[1]}\nhouse: {info[2]}\ndate: {info[3][0:4]}-{info[3][4:6]}-{info[3][6:8]}\ntime: {info[4][0:2]}:{info[4][2:4]}")
     lbl_info.pack(side="top", pady=20)
-    btn_confirm = ctk.CTkButton(self.frame, text="return",command=lambda:self.Return(master))
+    btn_confirm = ctk.CTkButton(self.frame, text="Return",command=lambda:self.Return(master))
     btn_confirm.pack(side="top", pady=20)
     self.frame.grid(row=11,column=0,columnspan=2)
 
@@ -542,7 +551,7 @@ class DeleteFilm(ctk.CTkFrame):
     lbl_date = ctk.CTkLabel(self,text="Date",font=("Helvetica", 18, "bold"))
     lbl_time = ctk.CTkLabel(self,text="Time",font=("Helvetica", 18, "bold"))
     lbl_price = ctk.CTkLabel(self,text="Price",font=("Helvetica", 18, "bold"))
-    lbl_seat = ctk.CTkLabel(self,text="No. of Available Seat",font=("Helvetica", 18, "bold"))
+    lbl_seat = ctk.CTkLabel(self,text="No. of available seats",font=("Helvetica", 18, "bold"))
     lbl_name.grid(row=0,column=0,padx=10,pady=20)
     lbl_house.grid(row=0,column=1,padx=10,pady=20)
     lbl_date.grid(row=0,column=2,padx=10,pady=20)
@@ -591,11 +600,11 @@ class DeleteFilm(ctk.CTkFrame):
 class TopDeleteFilm(ctk.CTkToplevel):
   def __init__(self,master,name,house):
     super().__init__(master)
-    self.title("Film Deleted")
+    self.title("Film deleted")
     self.resizable(False, False)
     self.geometry("400x300")
 
-    lbl1 = ctk.CTkLabel(self,text="Film Deleted:")
+    lbl1 = ctk.CTkLabel(self,text="Film deleted:")
     lbl2 = ctk.CTkLabel(self,text=f"{name}, house {house}")
     btn = ctk.CTkButton(self,text="Return",command=lambda:self.Return(master))
     lbl1.pack(side="top",pady=10)
@@ -622,13 +631,13 @@ class CreateHouse(ctk.CTkFrame):
           smallest = index+1
     self.house_no = smallest
 
-    self.lbl_message = ctk.CTkLabel(self,text="Create House", font=("Arial", 24))
+    self.lbl_message = ctk.CTkLabel(self,text="Create house", font=("Arial", 24))
     self.lbl_message.grid(row=0,column=0,columnspan=2,pady=20)
     self.lbl_name = ctk.CTkLabel(self,text=f"House no.: {self.house_no}")
     self.lbl_name.grid(row=1,column=0,columnspan=2,pady=5)
-    self.lbl_row = ctk.CTkLabel(self,text="row:")
+    self.lbl_row = ctk.CTkLabel(self,text="Row:")
     self.lbl_row.grid(row=2,column=0,pady=5)
-    self.lbl_col = ctk.CTkLabel(self,text="column:")
+    self.lbl_col = ctk.CTkLabel(self,text="Column:")
     self.lbl_col.grid(row=3,column=0,pady=5)
     f_row = ctk.CTkFrame(self,fg_color=self.cget("fg_color"))
     lblr = ctk.CTkLabel(f_row,text="10")
@@ -642,9 +651,9 @@ class CreateHouse(ctk.CTkFrame):
     sliderc = ctk.CTkSlider(f_col,number_of_steps=19,from_=1,to=20,command=lambda v:self.dynamicChangeSlider(v, lblc))
     sliderc.pack(side="left")
     f_col.grid(row=3,column=1,pady=5)
-    self.btn_submit = ctk.CTkButton(self,text="confirm",command=lambda:self.create(master,[self.house_no, lblr.cget("text"), lblc.cget("text")]))
+    self.btn_submit = ctk.CTkButton(self,text="Confirm",command=lambda:self.create(master,[self.house_no, lblr.cget("text"), lblc.cget("text")]))
     self.btn_submit.grid(row=9,column=0,columnspan=2,pady=5)
-    self.btn_signOut = ctk.CTkButton(self, text="sign out", width=20, height=5, fg_color="#282424", hover_color="#282424", cursor="hand2", command=lambda: self.signOut(master))
+    self.btn_signOut = ctk.CTkButton(self, text="Sign out", text_color="black", width=20, height=5, fg_color="#dbdbdb", hover_color="#dbdbdb", cursor="hand2", command=lambda: self.signOut(master))
     self.btn_signOut.grid(row=10,column=0,columnspan=2,pady=5)
 
   def dynamicChangeSlider(self, value, lbl):
@@ -663,7 +672,7 @@ class CreateHouse(ctk.CTkFrame):
     self.frame = ctk.CTkFrame(self,fg_color=self.cget("fg_color"))
     lbl_info = ctk.CTkLabel(self.frame, text=f"house no.: {info[0]}\nno. of rows: {info[1]}\nno. of columns:{info[2]}")
     lbl_info.pack(side="top", pady=20)
-    btn_confirm = ctk.CTkButton(self.frame, text="return",command=lambda:self.Return(master))
+    btn_confirm = ctk.CTkButton(self.frame, text="Return",command=lambda:self.Return(master))
     btn_confirm.pack(side="top", pady=20)
     self.frame.grid(row=11,column=0,columnspan=2)
 
@@ -677,7 +686,7 @@ class DeleteHouse(ctk.CTkFrame):
 
     self.houselist = io.fetchhouses()
 
-    lbl_no = ctk.CTkLabel(self,text="No.",font=("Helvetica", 18, "bold"))
+    lbl_no = ctk.CTkLabel(self,text="House no.",font=("Helvetica", 18, "bold"))
     lbl_row = ctk.CTkLabel(self,text="Rows",font=("Helvetica", 18, "bold"))
     lbl_col = ctk.CTkLabel(self,text="Columns",font=("Helvetica", 18, "bold"))
     lbl_no.grid(row=0,column=0,padx=10,pady=20)
